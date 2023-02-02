@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物车</title>
+    <script src="../vue.js"></script>
+    <script>
+        Vue.component("counter", {
+            template: '<span><button :data-i="index" :data-n="-1">-</button> {{sp.spcount}} <button :data-i="index" :data-n="+1"> +</button > </span>',
+            props: ["index", "sp"]
+        })
+    </script>
+</head>
+
+<body>
+    <div id="app">
+        <ul @click="handler">
+            <li v-for="(sp, index) in shangpins" :key="sp.spid">
+                <input type="checkbox" name="sptf" id="" v-model:checked="sp.isTF">
+                {{sp.spname}} |
+                {{sp.spprice.toFixed(2)}} |
+                <counter :index="index" :sp="sp"></counter> |
+                小计 {{(sp.spprice*sp.spcount).toFixed(2)}} |
+                <button @click="del(index)" :data-i="index">x</button>
+            </li>
+            <li>总价:{{zongjia.toFixed(2)}}</li>
+        </ul>
+    </div>
+
+    <script>
+        let gwc = new Vue({
+            el: "#app",
+            data: {
+                shangpins: [
+                    { spid: 1, spname: "华为", spprice: 5000, spcount: 2, isTF: false },
+                    { spid: 2, spname: "小米", spprice: 3000, spcount: 3, isTF: true },
+                    { spid: 3, spname: "苹果", spprice: 8000, spcount: 2, isTF: false },
+                ]
+            },
+            methods: {
+                handler(e) {
+                    if (e.target.nodeName == "BUTTON") {
+                        if (e.target.nodeName == "x") {
+                            this.shangpins.splice(e.target.dataset.i, 1);
+                        } else {
+                            let i = e.target.dataset.i;
+                            this.shangpins[i].spcount += parseInt(e.target.dataset.n);
+                            if (this.shangpins[i].spcount == 0) {
+                                this.shangpins.splice(i, 1);
+                            }
+                        }
+                    }
+                }
+            },
+            computed: {
+                zongjia() {
+                    let zj = 0;
+                    for (let sp of this.shangpins) {
+                        if (sp.isTF)
+                            zj += sp.spprice * sp.spcount;
+                    }
+                    return zj;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
